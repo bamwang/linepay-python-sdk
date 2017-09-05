@@ -45,6 +45,10 @@ class LINEPay(object):
             body = json.dumps(data)
             body = body.encode('utf-8')
             kwargs['data'] = body
+            kwargs['headers'] = {
+                'X-LINE-ChannelId': self.channel_id,
+                'X-LINE-ChannelSecret': self.channel_secret_key,
+            }
 
         res = self._http.request(
             method=method,

@@ -21,7 +21,7 @@ class LINEPayPayment(BaseLINEPayAPI):
             'confirmUrlType': confirm_url_type,
             'cancelUrl': cancel_url,
         }
-        self._post('/v2/payments/request', data=data)
+        return self._post('/v2/payments/request', data=data)
 
     def confirm(
         self,
@@ -33,7 +33,7 @@ class LINEPayPayment(BaseLINEPayAPI):
             'amount': amount,
             'currency': currency,
         }
-        self._post('/v2/payments/%s/confirm' % transactionId, data=data)
+        return self._post('/v2/payments/%s/confirm' % transactionId, data=data)
 
     def refund(
         self,
@@ -43,4 +43,4 @@ class LINEPayPayment(BaseLINEPayAPI):
         data = {
             'refundAmount': refund_amount,
         }
-        self._post('/v2/payments/%s/refund' % transactionId, data=data)
+        return self._post('/v2/payments/%s/refund' % transactionId, data=data)

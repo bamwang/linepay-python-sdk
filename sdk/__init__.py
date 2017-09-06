@@ -6,6 +6,8 @@ from optionaldict import optionaldict
 from .base import BaseLINEPayAPI
 from .exceptions import LINEPayException
 
+from .payment import LINEPayPayment
+
 """
 A LINE Pay SDK
 """
@@ -15,7 +17,7 @@ class LINEPay(object):
     LINE Pay client
     """
     
-    API_BASE_URL = 'https://api-pay.line.me/'
+    API_BASE_URL = 'https://api-pay.line.me'
 
     def __init__(self, channel_id, channel_secret_key):
         self._http = requests.Session()
@@ -42,17 +44,19 @@ class LINEPay(object):
         if isinstance(kwargs.get('data', ''), dict):
             data = optionaldict(kwargs['data'])
             self._del_none(data)
-            body = json.dumps(data)
-            body = body.encode('utf-8')
-            kwargs['data'] = body
-            kwargs['headers'] = {
-                'X-LINE-ChannelId': self.channel_id,
-                'X-LINE-ChannelSecret': self.channel_secret_key,
-            }
+            # body = json.dumps(data)
+            # # body = body.encode('utf-8')
+            kwargs['data'] = json.dumps(data)
+        kwargs['headers'] = {
+            'X-LINE-ChannelId': self.channel_id,
+            'X-LINE-ChannelSecret': self.channel_secret_key,
+            'Content-Type': 'application/json',
+        }
 
         res = self._http.request(
             method=method,
             url=url,
+            verify=False,
             **kwargs
         )
         try:
@@ -68,16 +72,33 @@ class LINEPay(object):
 
         return self._handle_result(res)
 
+    def get(self, url, **kwargs):
+        return self._request(
+            method='get',
+            url_or_endpoint=url,
+            **kwargs
+        )
+
+    def post(self, url, **kwargs):
+        return self._request(
+            method='post',
+            url_or_endpoint=url,
+            **kwargs
+        )
+
     def _handle_result(self, res):
+        print(res.text)
         res.encoding = 'utf-8'
-        data = json.loads(res.text, 'utf-8')
+        data = res.json()
 
         return_code = data['returnCode']
-        return_message = data.get('returnMessage')
+        return_message = data['returnMessage']
+        error_detail_map = data.get('errorDetailMap')
         if return_code != '0000':
             raise LINEPayException(
                 return_code,
                 return_message,
+                error_detail_map,
                 client=self,
                 request=res.request,
                 response=res

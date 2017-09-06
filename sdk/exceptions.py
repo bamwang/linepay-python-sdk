@@ -6,7 +6,7 @@ from .utils import to_binary, to_text
 class LINEPayException(Exception):
     """Base exception for wechatpy"""
 
-    def __init__(self, return_code, return_message, client=None,
+    def __init__(self, return_code, return_message, error_detail_map=None, client=None,
                  request=None, response=None):
         """
         :param return_code: Error code
@@ -14,14 +14,16 @@ class LINEPayException(Exception):
         """
         self.return_code = return_code
         self.return_message = return_message
+        self.error_detail_map = error_detail_map
         self.client = client
         self.request = request
         self.response = response
 
     def __str__(self):
-        _repr = 'Error code: {code}, message: {msg}'.format(
+        _repr = 'Error code: {code}, message: {msg}, detail: {detail}'.format(
             code=self.return_code,
-            msg=self.return_message
+            msg=self.return_message,
+            detail=self.error_detail_map
         )
         if six.PY2:
             return to_binary(_repr)

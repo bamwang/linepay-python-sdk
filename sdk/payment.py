@@ -1,6 +1,13 @@
 from . import BaseLINEPayAPI
 
 class LINEPayPayment(BaseLINEPayAPI):
+    def inquire(self, transaction_ids, order_ids):
+        transaction_ids_string = '' if transaction_ids is None else \
+            ','.join(map(lambda x: str(x), transaction_ids))
+        order_ids_string = '' if order_ids is None else ','.join(order_ids)
+        return self._get('/v2/payments?transactionId=%s&orderId=%s' \
+            % (transaction_ids_string, order_ids_string))
+
     def request(self,
         order_id,
         product_name,

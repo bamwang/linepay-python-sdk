@@ -32,7 +32,7 @@ class LINEPayPayment(BaseLINEPayAPI):
 
     def confirm(
         self,
-        transactionId,
+        transaction_id,
         amount,
         currency,
     ):
@@ -40,14 +40,14 @@ class LINEPayPayment(BaseLINEPayAPI):
             'amount': amount,
             'currency': currency,
         }
-        return self._post('/v2/payments/%s/confirm' % transactionId, data=data)
+        return self._post('/v2/payments/%s/confirm' % transaction_id, data=data)
 
     def refund(
         self,
-        transactionId,
+        transaction_id,
         refund_amount=None,
     ):
         data = {
             'refundAmount': refund_amount,
         }
-        return self._post('/v2/payments/%s/refund' % transactionId, data=data)
+        return self._post('/v2/payments/%s/refund' % transaction_id, data=data)
